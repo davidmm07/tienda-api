@@ -19,12 +19,11 @@ function testUser(req, res){
 function saveUser(req, res){
 	var user = new User();
 	var params = req.body;
-	console.log(params);
 	user.name = params.name;
 	user.nit = params.nit;
 	user.email= params.email.toLowerCase();
 	user.password= params.password;
-	user.role = 'ROLE_DEV';
+	user.role = 'ROLE_ADMIN';
 	user.image = 'null';
 
 	if (!params.password) {
@@ -57,6 +56,18 @@ function updateUser(req,res){
 	var userId = req.params.id;
 	var update = req.body;
 
+	if (userId != req.user.sub) {
+		return res.status(500).send({message:'No tienes permiso para actualizar el usuario'});
+	}
+	//verifico si tiene img, si es asi la eliminaria.
+	if (update.image!=null) {
+		var imgFile = update.image;
+		var path_file = "./uploads/users/"+imgFile;
+		fs.unlink(path_file,(err)=>{
+			if (err) throw err;
+			console.log(imgFile+' fue eliminado');
+		});
+	}
 	User.findOneAndUpdate({_id:userId}, update, {new: true},(err, userUpdated) =>{
 		if (err) {
 			return res.status(500).send({message:'Error al actualizar el usuario'});
@@ -68,12 +79,13 @@ function updateUser(req,res){
 	});
 }
 
+
 function loginUser(req, res){
 	let params = req.body;
-	let email = params.email;
+	let email = params.email.toLowerCase();
 	let password = params.password;
 
-	User.findOne({email: email.toLowerCase()},(err, user) =>{
+	User.findOne({email: email},(err, user) =>{
 		if (err) {
 			return res.status(500).send({message:'Error en la petición'});
 		}
@@ -105,7 +117,8 @@ function uploadImage(req, res){
 	let file_ext = path.extname(file_path)
 	file_name  = path.basename(file_path,file_ext);
 	if (file_ext == '.png' || file_ext == '.jpg' || file_ext == '.gif' ) {
-		User.findOneAndUpdate(userId,{image:file_name},(err,userUpdated)=>{
+		file_name = file_name+file_ext;
+		User.findOneAndUpdate({_id:userId},{image:file_name},(err,userUpdated)=>{
 			if(!userUpdated){
 				return res.status(404).send({message: 'No se ha podido actualizar el usuario'});
 			}

@@ -13,7 +13,7 @@ exports.createToken= function(user){
 		role: user.role,
 		image: user.image,
 		iat: moment().unix(), //tiempo actual formato timestamp
-		exp: moment().add(30, 'minutes').unix  //expira cada 30 minutos
+		exp: moment().add(20, 'minutes').unix  //expira cada 30 minutos
 	};
 
 /*	bcrypt.hash(config.secret,null, null, (err,hash) =>{
