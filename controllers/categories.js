@@ -47,7 +47,7 @@ function saveCategory(req, res){
 		if (!categoryStored) {
 			return res.status(404).send({message:'the category has not been saved'});
 		}
-		return res.status(200).send({categories: categoryStored});
+		return res.status(200).send({category: categoryStored});
 	});
 
 }
@@ -64,7 +64,7 @@ function updateCategory(req, res){
 		if(!categoryUpdated){
 			return res.status(404).send({message: 'Category could not be updated'});
 		}
-		res.status(200).send({categories: categoryUpdated});
+		res.status(200).send({category: categoryUpdated});
 	});
 
 }
@@ -78,7 +78,7 @@ function addSublevel(req, res){
 		if(!categoryUpdated){
 			return res.status(404).send({message: 'Category could not be updated'});
 		}
-		res.status(200).send({categories: categoryUpdated});
+		res.status(200).send({category: categoryUpdated});
 	});
 
 }
